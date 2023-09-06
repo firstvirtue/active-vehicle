@@ -11,7 +11,7 @@ THREE.ColorManagement.enabled = false
  * Base
  */
 // Debug
-const gui = new dat.GUI()
+// const gui = new dat.GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -41,7 +41,6 @@ gltfLoader.load(
     '/models/drifter.glb',
     (gltf) =>
     {
-        
         vehicle = gltf.scene
 
         gltf.scene.scale.set(0.0025, 0.0025, 0.0025)
@@ -54,7 +53,7 @@ gltfLoader.load(
         chassisBody = new CANNON.Body({ 
             mass: 1,
             shape: chassisShape,
-            position: new CANNON.Vec3(0, 5, 0)
+            position: new CANNON.Vec3(0, 2, 0)
         })
         
         const floorShape = new CANNON.Plane()
@@ -180,12 +179,11 @@ const tick = () =>
     world.step(deltaTime)
 
     if(vehicle) {
-        
-        // updateMovement(chassisBody, new CANNON.Vec3(10, 0 ,0))
+        updateMovement(chassisBody, new CANNON.Vec3(1, 0 ,0))
         vehicle.position.copy(chassisBody?.position)
     }
     
-    console.log(chassisBody?.position)
+    // console.log(chassisBody?.position)
 
     // Update controls
     controls.update()
@@ -200,16 +198,9 @@ const tick = () =>
 tick()
 
 function updateMovement(body, target) {
-    var direction = new CANNON.Vec3();
-    target.vsub(body.position, direction);
-    direction.y = 0;
-    direction.normalize();
+    const radius = 1, strength = 2, dt = 1 / 60;
     
-    // Get the rotation between the forward vector and the direction vector
-    var forward = new CANNON.Vec3(0,0,1);
-    body.quaternion.setFromVectors(forward, direction);
-    
-    // Multiply direction by 10 and store in body.velocity
-    var fixedSpeed = 10;
-    direction.mult(fixedSpeed, body.velocity);
+    const topPoint = new CANNON.Vec3(0, radius / 2, 0)
+    const impulse = new CANNON.Vec3(strength * dt, 0, 0)
+    body.applyImpulse(impulse, topPoint)
 }
