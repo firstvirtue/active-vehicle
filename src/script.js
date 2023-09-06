@@ -4,6 +4,7 @@ import * as dat from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import * as CANNON from 'cannon-es'
+import CannonDebugRenderer from './utils/cannonDebugRenderer'
 
 THREE.ColorManagement.enabled = false
 
@@ -21,6 +22,8 @@ const scene = new THREE.Scene()
 
 const world = new CANNON.World()
 world.gravity.set(0, -10, 0)
+
+const cannonDebugRenderer = new CannonDebugRenderer(scene, world)
 
 /**
  * Models
@@ -49,7 +52,7 @@ gltfLoader.load(
 
         const shapes = gltf.scene
 
-        const chassisShape = new CANNON.Box(new CANNON.Vec3(0.0660, 0.0660, 0.0660))
+        const chassisShape = new CANNON.Box(new CANNON.Vec3(0.5660, 0.0960, 0.5660))
         chassisBody = new CANNON.Body({ 
             mass: 1,
             shape: chassisShape,
@@ -184,6 +187,8 @@ const tick = () =>
     }
     
     // console.log(chassisBody?.position)
+    // [SCRIPT] 왜 통통 튀면서 움직이는 걸까요?
+    // cannonDebugRenderer.update()
 
     // Update controls
     controls.update()
@@ -198,7 +203,7 @@ const tick = () =>
 tick()
 
 function updateMovement(body, target) {
-    const radius = 1, strength = 2, dt = 1 / 60;
+    const radius = 1, strength = 10, dt = 1 / 60;
     
     const topPoint = new CANNON.Vec3(0, radius / 2, 0)
     const impulse = new CANNON.Vec3(strength * dt, 0, 0)
